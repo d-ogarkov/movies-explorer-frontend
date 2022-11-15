@@ -32,7 +32,14 @@
   padding-bottom: 0;
 }
 
-.portfolio__list-item::after {
+.portfolio__list-link {
+  display: block;
+  text-decoration: none;
+  border: none;
+  color: #000000;
+}
+
+.portfolio__list-link::after {
   content: "↗";
   float: right;
 }

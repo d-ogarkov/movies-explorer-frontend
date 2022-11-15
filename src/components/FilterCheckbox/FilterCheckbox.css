@@ -32,6 +32,10 @@
   content: '';
   transition: left .2s;
 }
+
+.filter-checkbox__slider:focus {
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.5));
+}
  
 .filter-checkbox__hidden:checked ~ .filter-checkbox__slider::after {
   left: 18px;

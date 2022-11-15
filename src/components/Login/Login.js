@@ -7,7 +7,7 @@ export default function Login() {
       <main className="dialog">
         <form className="dialog__form" action="/" method="post">
           <div className="dialog__head">
-            <Link to="/" className="dialog__logo-link"><img className="dialog__logo" src={logo} alt="Movies Explorer" lang="en" /></Link>
+            <Link to="/" className="dialog__logo-link"><img className="dialog__logo" src={logo} alt="Movies Explorer" /></Link>
             <h1 className="dialog__title">Рады видеть!</h1>
           </div>
           <div className="dialog__data">

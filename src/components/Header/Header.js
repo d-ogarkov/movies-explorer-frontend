@@ -4,7 +4,7 @@ import logo from '../../images/header-logo.svg';
 export default function Header({onMenuBtnClick}) {
   return (
     <header className="header">
-      <Link to="/" className="header__logo-link"><img className="header__logo" src={logo} alt="Movies Explorer" lang="en" /></Link>
+      <Link to="/" className="header__logo-link"><img className="header__logo" src={logo} alt="Movies Explorer" /></Link>
       <div className="header__links">
         <Switch>
           <Route exact path="/">
