@@ -1,4 +1,4 @@
-import {Link, Route, Switch} from 'react-router-dom';
+import {Route, Switch} from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -11,8 +11,8 @@ export default function Footer() {
               <a href="https://practicum.yandex.ru/" target="_blank" rel="noreferrer" className="footer__link">Яндекс.Практикум</a>
               <a href="https://github.com/" target="_blank" rel="noreferrer" className="footer__link">Github</a>
             </Route>
-            {["/movies", "/saved-movies"].map(path =>
-              <Route path={path}>
+            {["/movies", "/saved-movies"].map((path, i) =>
+              <Route path={path} key={i}>
                 <a href="https://practicum.yandex.ru/" target="_blank" rel="noreferrer" className="footer__link">Яндекс.Практикум</a>
                 <a href="https://github.com/" target="_blank" rel="noreferrer" className="footer__link">Github</a>
                 <a href="https://facebook.com/" target="_blank" rel="noreferrer" className="footer__link">Facebook</a>
