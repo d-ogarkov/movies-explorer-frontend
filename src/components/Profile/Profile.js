@@ -17,7 +17,7 @@ export default function Profile({handleUpdateUser, handleSignout}) {
     setValue("name", currentUser.name);
     setValue("email", currentUser.email);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentUser]);
 
   const onSubmit = (newUserInfo) => {
     handleUpdateUser(newUserInfo);
@@ -28,7 +28,7 @@ export default function Profile({handleUpdateUser, handleSignout}) {
       <main className="profile">
         <form className="profile__form" action="/" method="post" onSubmit={handleSubmit(onSubmit)}>
           <div className="profile__head">
-            <h1 className="profile__title">Привет, Виталий!</h1>
+            <h1 className="profile__title">Привет, {currentUser.name}!</h1>
           </div>
           <div className="profile__data">
             <fieldset className="profile__fieldset">
@@ -54,7 +54,7 @@ export default function Profile({handleUpdateUser, handleSignout}) {
           </div>
           <div className="profile__actions">
             <button className={`profile__btn ${ (!isValid || !isDirty) && 'profile__btn_disabled'}`} type="submit">Редактировать</button>
-            <button className="profile__btn profile__btn_type_hot" onClick={handleSignout}>Выйти из аккаунта</button>
+            <button className="profile__btn profile__btn_type_hot" onClick={handleSignout} type="button">Выйти из аккаунта</button>
           </div>
         </form>
       </main>

@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {Route, Switch, useHistory} from 'react-router-dom';
+import {Redirect, Route, Switch, useHistory} from 'react-router-dom';
 import './App.css';
 import Header from '../Header/Header';
 import Navigation from '../Navigation/Navigation';
@@ -15,30 +15,33 @@ import Popup from '../Popup/Popup';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 import {CurrentUserContext} from '../../contexts/CurrentUserContext';
 import {moviesApi} from '../../utils/MoviesApi';
-import {moviesApiSettings} from '../../utils/utils';
+import {moviesApiSettings, shortsDuration} from '../../utils/utils';
 import {mainApi} from '../../utils/MainApi';
 
 function App() {
-  const [isNavigationOpen, setNavigationOpen] = useState(false);
+  const [isNavigationOpen, setIsNavigationOpen] = useState(false);
   const [isSearchRunning, setIsSearchRunning] = useState(false);
   const [isSearchCompleted, setIsSearchCompleted] = useState(false);
+  const [isSearchSavedCompleted, setIsSearchSavedCompleted] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
 
   const [currentUser, setCurrentUser] = useState([]);
-  const [cards, setCards] = useState([]);
-  const [savedCards, setSavedCards] = useState([]); // savedCards фильтруется поиском для отображения
-  const [savedCardsCache, setSavedCardsCache] = useState([]); // Копия savedCards (все сохраненные карточки) для локального поиска
-  const [allMovies, setAllMovies] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(JSON.parse(localStorage.getItem('searchQuery')) || '');
+  const [searchSavedQuery, setSearchSavedQuery] = useState('');
+  const [clearSignal, setClearSignal] = useState(0);
+  const [searchShorts, setSearchShorts] = useState(JSON.parse(localStorage.getItem('searchShorts')) || '');
+  const [cards, setCards] = useState([]); // Карточки для страницы "Фильмы", отфильтрованные поиском 
+  const [savedCards, setSavedCards] = useState([]); // Карточки для "Сохраненных фильмов", отфильтрованные поиском
+  const [savedCardsCache, setSavedCardsCache] = useState([]); // Все сохраненные карточки, не отфильтрованные поиском
   const [loggedIn, setLoggedIn] = useState(null); // В момент первого рендера значение еще не true и не false (для ProtectedRoute)
-  //const [email, setEmail] = useState('');
   const history = useHistory();
 
   useEffect(() => {
     // Проверяем, есть ли сохраненный токен пользователя
-    if (localStorage.getItem('token')) {
-      const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (token) {
       tokenCheck(token);
     } else {
       setLoggedIn(false);
@@ -47,103 +50,102 @@ function App() {
   }, []);
 
   function handleMenuBtnClick() {
-    setNavigationOpen(true);
+    setIsNavigationOpen(true);
   }
 
   function closeNavigation() {
-    setNavigationOpen(false);
+    setIsNavigationOpen(false);
   }
 
-  // Обрабатывает нажатие кнопки поиска фильмов
-  function handleSearch(searchQuery, searchShorts, useCache = false) {
-    var searchResult = {};
-    const searchResultCache = localStorage.getItem('searchResult');
-
-    // Если запрос не изменился, сначала проверим, есть ли уже загруженные из MoviesApi фильмы
-    if (useCache && searchResultCache) {
-      searchResult = JSON.parse(searchResultCache);
-
-      if (searchShorts === true) {
-        searchResult = searchResult.filter(function (movie) {
-          return movie.duration <= 40;
-        });
-      }
-
-      // Отображаем карточки найденных фильмов
-      setCards(searchResult);
-    } else {
-      // Включаем показ прелоадера и запускаем поиск
-      setIsSearchRunning(true);
-      setIsError(false);
-      setIsSearchCompleted(false);
-      // Сохраненного массива фильмов нет, тогда загружаем
-      loadMovies(searchQuery).then((searchResult) => {
-        // Сохраняем найденные фильмы
-        localStorage.setItem('searchResult', JSON.stringify(searchResult));
-
-        // Если установлен переключатель «Короткометражки», то отфильтровывам массив:
-        // оставляем только фильмы длительностью до 40 минут включительно
-        if (searchShorts === true) {
-          searchResult = searchResult.filter(function (movie) {
-            return movie.duration <= 40;
-          });
-        }
-
-        // По окончании поиска выключаем прелоадер и запоминаем, что поиск выполнен
-        setIsSearchRunning(false);
-        setIsSearchCompleted(true);
-
-        // Отображаем карточки найденных фильмов
-        setCards(searchResult);
-      })
-      .catch((err) => setIsError(true));
-    }
-  }
-
-  // Обрабатывает нажатие кнопки поиска фильмов среди сохраненных
-  function handleSavedSearch(searchQuery, searchShorts) {
+  function performSearch(newSearchQuery, newSearchShorts) {
     // Включаем показ прелоадера и запускаем поиск
     setIsSearchRunning(true);
     setIsError(false);
     setIsSearchCompleted(false);
 
+    searchMovies(newSearchQuery).then((searchResult) => {
+      // Если установлен переключатель «Короткометражки», то отфильтровывам массив:
+      // оставляем только фильмы длительностью до 40 минут включительно
+      if (newSearchShorts === true) {
+        searchResult = searchResult.filter(function (movie) {
+          return movie.duration <= shortsDuration;
+        });
+      }
+
+      // По окончании поиска выключаем прелоадер и запоминаем, что поиск выполнен
+      setIsSearchRunning(false);
+      setIsSearchCompleted(true);
+
+      // Отображаем карточки найденных фильмов
+      setCards(searchResult);
+    })
+    .catch((err) => {
+      console.log(err);
+      setIsError(true);
+    });
+  }
+
+  // Обрабатывает нажатие кнопки поиска фильмов
+  function handleSearch(newSearchQuery, newSearchShorts) {
+    // Сохраняем запрос и состояние переключателя "Короткометражки"
+    setSearchQuery(newSearchQuery);
+    setSearchShorts(newSearchShorts);
+    localStorage.setItem('searchQuery', JSON.stringify(newSearchQuery));
+    localStorage.setItem('searchShorts', JSON.stringify(newSearchShorts));
+
+    performSearch(newSearchQuery, newSearchShorts);
+  }
+
+  // Обрабатывает нажатие кнопки поиска фильмов среди сохраненных
+  function handleSavedSearch(newSearchQuery, newSearchShorts) {
+    setSearchSavedQuery(newSearchQuery);
+    setIsError(false);
+    setIsSearchSavedCompleted(false);
+
     // Отфильтровываем все сохраненные фильмы (savedCardsCache) по поисковому запросу
     var searchResult = savedCardsCache.filter((movie) =>
       movie.nameRU.toLowerCase()
-        .includes(searchQuery.toLowerCase())
+        .includes(newSearchQuery.toLowerCase())
     );
 
     // Если установлен переключатель «Короткометражки», то дополнительно фильтруем массив:
     // оставляем только фильмы длительностью до 40 минут включительно
-    if (searchShorts === true) {
+    if (newSearchShorts === true) {
       searchResult = searchResult.filter(function (movie) {
-        return movie.duration <= 40;
+        return movie.duration <= shortsDuration;
       });
     }
 
-    // По окончании поиска выключаем прелоадер и запоминаем, что поиск выполнен
-    setIsSearchRunning(false);
-    setIsSearchCompleted(true);
+    setIsSearchSavedCompleted(true);
   
     // Отображаем карточки найденных фильмов
     setSavedCards(searchResult);
   }
 
-  // Получает массив фильмов и ищет в нем по заданному запросу
-  function loadMovies(query) {
+  // Ищет в массиве фильмов из MoviesApi (загружая его или используя сохраненный) по заданному запросу
+  function searchMovies(query) {
     // Загрузка фильмов - асинхронный запрос, поэтому возвращаем промис
     return new Promise(function(resolve, reject) {
       // Если уже загружали все фильмы, используем сохраненный массив
-      if (allMovies.length) {
-        resolve(allMovies.filter((movie) =>
-        movie.nameRU.toLowerCase()
-          .includes(query.toLowerCase())
-        ));
+      const moviesCacheJSON = localStorage.getItem('moviesCache');
+      if (moviesCacheJSON) {
+        const moviesCache = JSON.parse(moviesCacheJSON);
+        if (moviesCache.length) {
+          resolve(moviesCache.filter((movie) =>
+          movie.nameRU.toLowerCase()
+            .includes(query.toLowerCase())
+          ));
+        } else {
+          // Если что-то пошло не так с сохраненной базой фильмов, удаляем ее из хранилища
+          localStorage.removeItem('moviesCache');
+          reject();
+        }
       } else {
+        // Если еще не загружали базу фильмов, обращаемся к MoviesApi
         moviesApi.getMovies()
           .then(resMovies => {
             // Сохраняем фильмы для последующих поисков
-            setAllMovies(resMovies);
+            localStorage.setItem('moviesCache', JSON.stringify(resMovies));
             // MoviesApi отдает все фильмы, поэтому отфильтровываем только те, название которых содержит поисковый запрос
             // (сначала приводим и название, и запрос к нижнему регистру)
             resolve(resMovies.filter((movie) =>
@@ -160,12 +162,21 @@ function App() {
   function loadSavedMovies() {
     mainApi.getMovies()
     .then(resMovies => {
-      setSavedCards(resMovies);
       setSavedCardsCache(resMovies);
+      setSavedCards(resMovies);
+      setSearchSavedQuery('');
+      localStorage.setItem('savedMoviesCache', JSON.stringify(resMovies));
     })
     .catch((err) => {
       console.log(err);
+      openPopup('Что-то пошло не так! Попробуйте ещё раз.');
     });
+  }
+
+  // Сбрасывает состояние массива сохраненных карточек к полному варианту, без поисковой фильтрации
+  function resetSavedCards() {
+    setSavedCards(savedCardsCache);
+    setSearchSavedQuery('');
   }
 
   // Регистрация пользователя
@@ -222,11 +233,21 @@ function App() {
       nameEN: nameEN,      
     })
     .then(res => {
-      loadUserData();
+      // Перезагрузим сохраненные карточки с сервера, чтобы правильно отображать кнопки добавления/удаления
+      // и страницу "Сохраненные фильмы" с учетом добавленной карточки
+      setSavedCards([...savedCards, res]);
+      const newSavedCardsCache = [...savedCardsCache, res];
+      setSavedCardsCache(newSavedCardsCache);
+      localStorage.setItem('savedMoviesCache', JSON.stringify(newSavedCardsCache));
+      setSearchSavedQuery('');
+      setClearSignal(clearSignal + 1);
     })
     .catch((err) => {
       console.log(err);
       openPopup('Что-то пошло не так! Попробуйте ещё раз.');
+      if (err.status === 401) {
+        handleSignout();
+      }
     });
   }
 
@@ -235,11 +256,21 @@ function App() {
     // Отправляем запрос в API и получаем обновлённые данные карточки
     mainApi.deleteMovie(card._id)
     .then(res => {
-      loadUserData();
+      // Перезагрузим сохраненные карточки с сервера, чтобы правильно отображать кнопки добавления/удаления
+      // и страницу "Сохраненные фильмы" с учетом удаленной карточки
+      setSavedCards(savedCards.filter(savedCard => savedCard._id !== card._id));
+      const newSavedCardsCache = savedCardsCache.filter(savedCard => savedCard._id !== card._id);
+      setSavedCardsCache(newSavedCardsCache);
+      localStorage.setItem('savedMoviesCache', JSON.stringify(newSavedCardsCache));
+      setSearchSavedQuery('');
+      setClearSignal(clearSignal + 1);
     })
     .catch((err) => {
       console.log(err);
       openPopup('Что-то пошло не так! Попробуйте ещё раз.');
+      if (err.status === 401) {
+        handleSignout();
+      }
     });
   }
 
@@ -258,6 +289,7 @@ function App() {
     }
   }
 
+  // Обрабатывает сохранение данных на странице "Профиль"
   function handleUpdateUser(newUserInfo) {
     openPopup('Информация обновлена.');
     mainApi.setUserInfo(newUserInfo)
@@ -273,26 +305,63 @@ function App() {
     });
   }
 
-  // Выход из аккаунта: удаление токена из хранилища и редирект на главную
+  // Выход из аккаунта: удаление данных из стейтов, локального хранилища и редирект на главную
   function handleSignout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('savedQuery');
-    localStorage.removeItem('savedShorts');
-    localStorage.removeItem('searchResult');
+    setIsNavigationOpen(false);
+    setIsSearchRunning(false);
+    setIsSearchCompleted(false);
+    setIsSearchSavedCompleted(false);
+    setIsError(false);
+    setIsPopupOpen(false);
+    setPopupMessage('');
+    setCurrentUser([]);
+    setCards([]);
+    setSavedCards([]);
+    setSavedCardsCache([]);
+    setSearchQuery('');
+    setSearchSavedQuery('');
+    setSearchShorts(false);
     setLoggedIn(false);
+    localStorage.removeItem('token');
+    localStorage.removeItem('searchQuery');
+    localStorage.removeItem('searchShorts');
+    localStorage.removeItem('moviesCache');
+    localStorage.removeItem('savedMoviesCache');
     history.push("/");
   }
 
-  // Загружаем информацию о пользователе и сохраненные карточки
+  // Загружает информацию о пользователе и сохраненные карточки
   function loadUserData() {
     mainApi.getUserInfo()
       .then(resUserInfo => {
+        // Загружаем имя и email
         setCurrentUser(resUserInfo);
-        loadSavedMovies();
+
+        // Загружаем сохраненные фильмы, сначала пробуем из localStorage
+        const savedMoviesCacheJSON = localStorage.getItem('savedMoviesCache');
+        if (savedMoviesCacheJSON) {
+          const savedMoviesCache = JSON.parse(savedMoviesCacheJSON);
+          if (savedMoviesCache.length) {
+            setSavedCards(savedMoviesCache);
+            setSavedCardsCache(savedMoviesCache);
+          } else {
+            // Если проблема с JSON, то загружаем из API
+            localStorage.removeItem('savedMoviesCache');
+            loadSavedMovies();
+          }
+        } else {
+          // Если нет в localStorage, то загружаем из API
+          loadSavedMovies();
+        }
+
+        // Если есть непустой поисковый запрос, выполняем поиск для главной страницы
+        if (searchQuery.length) {
+          performSearch(searchQuery, searchShorts);
+        }
       })
       .catch((err) => {
         console.log(err);
-        setLoggedIn(false);
+        openPopup('Что-то пошло не так! Попробуйте ещё раз.');
       });
   }
   
@@ -310,15 +379,15 @@ function App() {
             history.push("/movies");
           }
         } else {
-          setLoggedIn(false);
+          handleSignout();
         }
       })
       .catch((err) => {
         console.log(err);
-        setLoggedIn(false);
+        handleSignout();
       });
     } else {
-      setLoggedIn(false);
+      handleSignout();
     }
   }
 
@@ -346,6 +415,8 @@ function App() {
             cards={cards}
             savedCards={savedCardsCache}
             onCardButton={handleCardButton}
+            searchQuery={searchQuery}
+            searchShorts={searchShorts}
             handleSearch={handleSearch}
             isSearchRunning={isSearchRunning}
             isSearchCompleted={isSearchCompleted}
@@ -356,12 +427,13 @@ function App() {
             path="/saved-movies"
             component={SavedMovies}
             cards={savedCards}
-            savedCards={savedCardsCache}
             onCardButton={handleCardButton}
+            searchQuery={searchSavedQuery}
             handleSearch={handleSavedSearch}
-            isSearchRunning={isSearchRunning}
-            isSearchCompleted={isSearchCompleted}
+            isSearchCompleted={isSearchSavedCompleted}
             isError={isError}
+            onMount={resetSavedCards}
+            clearSignal={clearSignal}
           />
           <ProtectedRoute
             loggedIn={loggedIn}
@@ -371,10 +443,18 @@ function App() {
             handleSignout={handleSignout}
           />
           <Route path="/signin">
-            <Login handleLogin={handleLogin}/>
+            {loggedIn === true ? (
+              <Redirect to="/" />
+            ) : (
+              <Login handleLogin={handleLogin} />
+            )}
           </Route>
           <Route path="/signup">
-            <Register handleRegister={handleRegister} />
+            {loggedIn === true ? (
+              <Redirect to="/" />
+            ) : (
+              <Register handleRegister={handleRegister} />
+            )}
           </Route>
           <Route path='*'>
             <PageNotFound />

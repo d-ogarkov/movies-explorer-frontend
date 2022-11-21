@@ -2,7 +2,17 @@ import {moviesApiSettings} from '../../utils/utils';
 
 export default function MoviesCard({card, onCardButton, isSaved, isViewingSavedCards}) {
   const cardButtonClassName = (
-    isSaved ? 'card__unsave-btn' : 'card__save-btn'
+    // Кнопка сохранения выглядит по-разному для сохраненных и несохраненных карточек,
+    // для сохраненных есть два варианта для страниц "Фильмы" и "Сохраненные фильмы"
+    isSaved ? (
+      isViewingSavedCards ? (
+        'card__unsave-btn'
+      ) : (
+        'card__save-btn card__save-btn_active'
+      )
+    ) : (
+      'card__save-btn'
+    )
   );
 
   function formatDuration(duration) {

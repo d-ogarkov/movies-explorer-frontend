@@ -1,4 +1,4 @@
-import {Link, Route, Switch} from 'react-router-dom';
+import {Link, NavLink, Route, Switch} from 'react-router-dom';
 import logo from '../../images/header-logo.svg';
 
 export default function Header({loggedIn, onMenuBtnClick}) {
@@ -10,10 +10,10 @@ export default function Header({loggedIn, onMenuBtnClick}) {
           <Route exact path="/">
             {loggedIn ? (
               <>
-                <ul className="header__links_nav">
-                  <li><Link to="/movies" className="header__link">Фильмы</Link></li>
-                  <li><Link to="/saved-movies" className="header__link">Сохраненные фильмы</Link></li>
-                </ul>
+                <nav className="header__links_nav">
+                  <li><NavLink to="/movies" activeClassName="header__link_type_active" className="header__link">Фильмы</NavLink></li>
+                  <li><NavLink to="/saved-movies" activeClassName="header__link_type_active" className="header__link">Сохраненные фильмы</NavLink></li>
+                </nav>
                 <ul className="header__links_account">
                   <li><Link to="/profile" className="header__link header__link_type_account">Аккаунт</Link></li>
                 </ul>
@@ -28,10 +28,10 @@ export default function Header({loggedIn, onMenuBtnClick}) {
           </Route>
           {["/movies", "/saved-movies", "/profile"].map((path, i) =>
             <Route path={path} key={i}>
-              <ul className="header__links_nav">
-                <li><Link to="/movies" className="header__link">Фильмы</Link></li>
-                <li><Link to="/saved-movies" className="header__link">Сохраненные фильмы</Link></li>
-              </ul>
+              <nav className="header__links_nav">
+                <li><NavLink to="/movies" activeClassName="header__link_type_active" className="header__link">Фильмы</NavLink></li>
+                <li><NavLink to="/saved-movies" activeClassName="header__link_type_active" className="header__link">Сохраненные фильмы</NavLink></li>
+              </nav>
               <ul className="header__links_account">
                 <li><Link to="/profile" className="header__link header__link_type_account">Аккаунт</Link></li>
               </ul>

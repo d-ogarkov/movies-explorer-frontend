@@ -22,11 +22,11 @@ class MainApi {
       if (res.ok) {
         return res.json();
       } else {
+        console.log(res);
         // Если ошибка, отклоняем промис
-        return Promise.reject(`Ошибка: ${res.status}`);
+        return Promise.reject(res);
       }
     })
-    .catch((err) => console.log(err));
   }
 
   // Регистрация пользователя

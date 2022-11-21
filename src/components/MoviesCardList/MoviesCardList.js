@@ -1,7 +1,11 @@
 import {useEffect, useState} from 'react';
+import {viewSettings} from '../../utils/utils';
 import MoviesCard from '../MoviesCard/MoviesCard';
 import Preloader from '../Preloader/Preloader';
 
+// cards - карточки для отображения
+// savedCards - все сохраненные карточки, чтобы определять, какие из cards уже сохранены, и показывать кнопки Save/Unsave
+// isViewingSavedCards - если true, значит, показываем сохраненные карточки из нашей базы, у всех будет кнопка Unsave; также передается в MoviesCard для отображения, т.к. структура карточек в базе немного отличается от структуры карточек из MoviesApi
 export default function MoviesCardList({cards, savedCards, onCardButton, isSearchRunning, isSearchCompleted, isError, isViewingSavedCards}) {
   const [cardsShown, setCardsShown] = useState(0);
   const [cardsToAdd, setCardsToAdd] = useState(0);
@@ -72,15 +76,15 @@ export default function MoviesCardList({cards, savedCards, onCardButton, isSearc
 
   // Пересчитывает количество отображаемых и добавляемых карточек в зависимости от размера окна
   function renderCardList({width, height}) {
-    if (width >= 1280) {
-      setCardsShown(12);
-      setCardsToAdd(3);
-    } else if (width >= 768) {
-      setCardsShown(8);
-      setCardsToAdd(2);
+    if (width >= viewSettings.maxWidth.value) {
+      setCardsShown(viewSettings.maxWidth.cardsShown);
+      setCardsToAdd(viewSettings.maxWidth.cardsToAdd);
+    } else if (width >= viewSettings.mediumWidth.value) {
+      setCardsShown(viewSettings.mediumWidth.cardsShown);
+      setCardsToAdd(viewSettings.mediumWidth.cardsToAdd);
     } else {
-      setCardsShown(5);
-      setCardsToAdd(2);
+      setCardsShown(viewSettings.minWidth.cardsShown);
+      setCardsToAdd(viewSettings.minWidth.cardsToAdd);
     }
   }
 

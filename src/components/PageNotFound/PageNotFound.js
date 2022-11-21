@@ -9,7 +9,7 @@ export default function PageNotFound() {
         <h1 className="not-found__title">404</h1>
         <p className="not-found__description">Страница не найдена</p>
       </section>
-      <button className="not-found__btn" onClick={() => history.goBack()}>Назад</button>
+      <button className="not-found__btn" onClick={() => history.goBack()} type="button">Назад</button>
     </main>
   );
 }
