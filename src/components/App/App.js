@@ -28,7 +28,7 @@ function App() {
   const [popupMessage, setPopupMessage] = useState('');
 
   const [currentUser, setCurrentUser] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(localStorage.getItem('searchQuery')) || '');
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem('searchQuery') || '');
   const [searchSavedQuery, setSearchSavedQuery] = useState('');
   const [clearSignal, setClearSignal] = useState(0);
   const [searchShorts, setSearchShorts] = useState(JSON.parse(localStorage.getItem('searchShorts')) || '');
