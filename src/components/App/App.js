@@ -28,7 +28,7 @@ function App() {
   const [popupMessage, setPopupMessage] = useState('');
 
   const [currentUser, setCurrentUser] = useState([]);
-  const [searchQuery, setSearchQuery] = useState(JSON.parse(localStorage.getItem('searchQuery')) || '');
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem('searchQuery')) || '');
   const [searchSavedQuery, setSearchSavedQuery] = useState('');
   const [clearSignal, setClearSignal] = useState(0);
   const [searchShorts, setSearchShorts] = useState(JSON.parse(localStorage.getItem('searchShorts')) || '');
@@ -90,7 +90,7 @@ function App() {
     // Сохраняем запрос и состояние переключателя "Короткометражки"
     setSearchQuery(newSearchQuery);
     setSearchShorts(newSearchShorts);
-    localStorage.setItem('searchQuery', JSON.stringify(newSearchQuery));
+    localStorage.setItem('searchQuery', newSearchQuery);
     localStorage.setItem('searchShorts', JSON.stringify(newSearchShorts));
 
     performSearch(newSearchQuery, newSearchShorts);
