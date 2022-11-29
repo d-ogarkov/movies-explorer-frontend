@@ -56,6 +56,13 @@
   outline: none;
 }
 
+.search-form__error {
+  padding: 10px;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #FF4062;
+}
+
 .search-form__button {
   margin: 0;
   padding: 0;

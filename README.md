@@ -28,3 +28,7 @@ React (инфраструктура подготовлена при помощи
 ## Репозиторий
 
 * [Ссылка на репозиторий](https://github.com/d-ogarkov/movies-explorer-frontend)
+
+## Пулл-реквест
+
+* [Ссылка на пулл-реквест из ветки level-3](https://github.com/d-ogarkov/movies-explorer-frontend/pull/2)

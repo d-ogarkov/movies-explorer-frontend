@@ -25,13 +25,16 @@
   color: #000000;
 }
 
-.not-found__link {
+.not-found__btn {
   position: absolute;
   bottom: 30px;
   font-size: 12px;
   line-height: 1.25;
+  background-color: #FFFFFF;
   color: #000000;
+  border: none;
   text-decoration: none;
+  cursor: pointer;
 }
 
 @media screen and (min-width: 768px) {
@@ -44,7 +47,7 @@
     line-height: 1.19;
   }
 
-  .not-found__link {
+  .not-found__btn {
     position: unset;
     margin-top: 184px;
     font-size: 14px;

@@ -6,6 +6,9 @@
   background: #FDFDFD;
   box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.08);
   font-size: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .card:last-child {
@@ -39,8 +42,10 @@
 }
 
 .card__thumbnail {
+  max-width: 300px;
   height: 168px;
   object-fit: cover;
+  align-self: center;
 }
 
 .card__save-btn {
@@ -57,6 +62,10 @@
 .card__save-btn:hover {
   cursor: pointer;
   opacity: .5;
+}
+
+.card__save-btn_active {
+  background-image: url('../../images/save-btn-active.svg');
 }
 
 .card__unsave-btn {
@@ -83,6 +92,7 @@
   }
 
   .card__thumbnail {
+    max-width: 339px;
     height: 190px;
   }
 }
@@ -94,6 +104,7 @@
   }
 
   .card__thumbnail {
+    max-width: 364px;
     height: 203px;
   }
 }

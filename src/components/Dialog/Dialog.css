@@ -7,14 +7,6 @@
   justify-content: center;
 }
 
-.dialog__content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-
 .dialog__form {
   width: 100%;
   height: 100%;
@@ -87,6 +79,7 @@
 
 .dialog__label {
   display: block;
+  height: 81px;
   margin: 0;
   padding: 0 0 18px 0;
   border: none;
@@ -132,6 +125,10 @@
   color: #FF4062;
 }
 
+.dialog__error_active {
+  opacity: 1;
+}
+
 .dialog__submit-btn {
   width: 260px;
   min-height: 45px;
@@ -143,6 +140,11 @@
   font-size: 12px;
   line-height: 1.25px;
   text-align: center;
+  cursor: pointer;
+}
+
+.dialog__submit-btn_disabled {
+  background: #A0A0A0;
 }
 
 .dialog__paragraph {
