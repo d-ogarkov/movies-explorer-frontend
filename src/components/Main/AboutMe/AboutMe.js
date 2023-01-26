@@ -7,9 +7,9 @@ export default function AboutMe() {
       <div className="about-me__bio">
         <img className="about-me__portrait" src={portrait} alt="Портрет" />
         <div className="about-me__text">
-          <h3 className="about-me__title">Виталий</h3>
-          <p className="about-me__description">Фронтенд-разработчик, 30 лет</p>
-          <p className="about-me__paragraph">Я родился и&nbsp;живу в&nbsp;Саратове, закончил факультет экономики СГУ. У&nbsp;меня есть жена и&nbsp;дочь. Я&nbsp;люблю слушать музыку, а&nbsp;ещё увлекаюсь бегом. Недавно начал кодить. С&nbsp;2015 года работал в&nbsp;компании «СКБ Контур». После того, как прошёл курс по&nbsp;веб-разработке, начал заниматься фриланс-заказами и&nbsp;ушёл с&nbsp;постоянной работы.</p>
+          <h3 className="about-me__title">Дмитрий</h3>
+          <p className="about-me__description">Веб-разработчик, 44 года</p>
+          <p className="about-me__paragraph">Родился и&nbsp;живу в&nbsp;Вологде, закончил электроэнергетический факультет ВоГТУ (сейчас ВоГУ). Занимался системным администрированием в&nbsp;коммерческом банке, постепенно взялся за&nbsp;поддержку сайта и&nbsp;разработку ПО. В&nbsp;2013 году ушел заниматься своими проектами на&nbsp;PHP/JavaScript. В&nbsp;2021&mdash;2022&nbsp;гг прошел курс &laquo;Веб-разработчик&raquo; в&nbsp;Яндекс.Практикуме, чтобы продолжать профессиональный рост.</p>
           <ul className="about-me__links">
             <li className="about-me__link">Facebook</li>
             <li className="about-me__link">Github</li>
