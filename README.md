@@ -1,34 +1,21 @@
-# movies-explorer-frontend
+# Movies Explorer (фронтенд)
 
-Дипломная работа. Фронтенд сервиса, в котором можно найти фильмы по запросу и сохранить в личном кабинете.
+Фронтенд-часть дипломной работы в Яндекс.Практикуме. Сервис, в котором можно найти фильмы по запросу и сохранить в избранном.
 
-## Макет
+Выполнено на React. Инфраструктура подготовлена при помощи Create React App. Верстка по макету в Figma.
 
-* [Макет в Figma](https://disk.yandex.ru/d/9W0W9D3cmtZpiw)
+## Демо
 
-## На чем сделано
-
-React (инфраструктура подготовлена при помощи Create React App).
-
-## Где находится продакшен
-
-* IP 158.160.15.213
 * https://favemovies.nomoredomains.icu
 
 ## Запуск
 
-В режиме разработки:
+`npm start` — запуск в режиме разработки
 
-### `npm start`
+`npm run build` — подготовка билда (будет создан в подкаталоге `/build`)
 
-Подготовка билда (будет создан в подкаталоге /build):
+## Ссылки
 
-### `npm run build`
-
-## Репозиторий
-
-* [Ссылка на репозиторий](https://github.com/d-ogarkov/movies-explorer-frontend)
-
-## Пулл-реквест
-
-* [Ссылка на пулл-реквест из ветки level-3](https://github.com/d-ogarkov/movies-explorer-frontend/pull/2)
+* [Макет в Figma](https://disk.yandex.ru/d/9W0W9D3cmtZpiw)
+* [Репозиторий](https://github.com/d-ogarkov/movies-explorer-frontend)
+* [Бэкенд проекта](https://github.com/d-ogarkov/movies-explorer-api)
