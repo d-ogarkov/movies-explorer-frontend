@@ -10,7 +10,7 @@ export default function Portfolio() {
           <a className="portfolio__list-link" href="https://d-ogarkov.github.io/russian-travel/" target="_blank" rel="noreferrer">Адаптивный сайт</a>
         </li>
         <li className="portfolio__list-item">
-          <a className="portfolio__list-link" href="https://ogarkov.mesto.nomoredomains.icu/" target="_blank" rel="noreferrer">Одностраничное приложение</a>
+          <a className="portfolio__list-link" href="https://mesto.ogarkov.com/" target="_blank" rel="noreferrer">Одностраничное приложение</a>
         </li>
       </ul>
     </section>
