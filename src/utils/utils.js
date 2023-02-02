@@ -1,6 +1,6 @@
 export const mainApiSettings = {
-  baseUrl: 'https://api.favemovies.nomoredomains.icu',
-  authUrl: 'https://api.favemovies.nomoredomains.icu',
+  baseUrl: 'https://api.movies.ogarkov.com',
+  authUrl: 'https://api.movies.ogarkov.com',
 }
 
 export const moviesApiSettings = {
