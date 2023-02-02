@@ -6,7 +6,7 @@
 
 ## Демо
 
-* https://favemovies.nomoredomains.icu
+* https://movies.ogarkov.com
 
 ## Запуск
 
